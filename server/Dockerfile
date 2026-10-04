@@ -1,16 +1,4 @@
-FROM adoptopenjdk:11-hotspot AS builder
-# env 
-ENV USE_PROFILE dev
-ENV HOST_NAME localhost
-ENV SCHEMA localagora
-ENV USERNAME root
-ENV PASSWORD 1234
-ENV JWT_SECRET slfjlskdfjslkf
-ENV REDISHOST AGORA
-ENV REDISPASS redispass
-ENV MEETING_HOST HOST
-ENV MEETING_SECRET SECRET
-# env finish
+FROM eclipse-temurin:11-jdk AS builder
 COPY server/gradlew .
 COPY server/gradle gradle
 COPY server/build.gradle .
@@ -20,8 +8,10 @@ RUN chmod +x ./gradlew
 RUN ./gradlew clean compileQuerydsl
 RUN ./gradlew clean bootJar
 
-FROM adoptopenjdk:11-hotspot
+FROM eclipse-temurin:11-jre
 COPY --from=builder build/libs/*.jar app.jar
 
+# 실행에 필요한 값(DB, JWT, Redis, OpenVidu, OAuth, GCP 키 경로)은 이미지에 넣지 않고 런타임 환경변수로 주입한다.
+ENV USE_PROFILE=prod
 EXPOSE 8081
 ENTRYPOINT ["java","-jar","-Dspring.profiles.active=${USE_PROFILE}", "-Ddatabase.hostname=${HOST_NAME}", "-Ddatabase.schema=${SCHEMA}", "-Ddatabase.username=${USERNAME}", "-Ddatabase.password=${PASSWORD}", "-Djwt.secret=${JWT_SECRET}", "-Dredishost=${REDISHOST}", "-Dredispass=${REDISPASS}", "-Dopenvidu.hostname=${MEETING_HOST}", "-Dopenvidu.secret=${MEETING_SECRET}", "/app.jar"]
