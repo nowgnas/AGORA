@@ -14,17 +14,27 @@ services:
         container_name: backend
         ports:
             - 8081:8081
+        # 민감한 값은 저장소에 커밋하지 않고 .env 파일(.env.example 참고)로 주입한다.
         environment:
             USE_PROFILE: prod
-            HOST_NAME: a705agora
-            SCHEMA: basetable
-            USERNAME: root
-            PASSWORD: dkrhfk705
-            JWT_SECRET: lskjflsakjflakdjflk
-            REDISHOST: redis
-            REDISPASS: reidsa08a705
-            MEETING_HOST: https://viduagora.duckdns.org
-            MEETING_SECRET: ssafy705
+            HOST_NAME: ${HOST_NAME}
+            SCHEMA: ${SCHEMA}
+            USERNAME: ${DB_USERNAME}
+            PASSWORD: ${DB_PASSWORD}
+            JWT_SECRET: ${JWT_SECRET}
+            REDISHOST: ${REDISHOST}
+            REDISPASS: ${REDISPASS}
+            MEETING_HOST: ${MEETING_HOST}
+            MEETING_SECRET: ${MEETING_SECRET}
+            GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+            GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+            NAVER_CLIENT_ID: ${NAVER_CLIENT_ID}
+            NAVER_CLIENT_SECRET: ${NAVER_CLIENT_SECRET}
+            KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+            KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+            GCP_CREDENTIALS_PATH: /run/secrets/gcp-account-file.json
+        volumes:
+            - ${GCP_CREDENTIALS_FILE}:/run/secrets/gcp-account-file.json:ro
         networks:
             - AGORA
 networks:

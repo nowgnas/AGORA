@@ -13,7 +13,7 @@ spring:
         password: ${redispass}
     gcp:
         config:
-            file: gcp-account-file.json
+            file: ${GCP_CREDENTIALS_PATH} # 서비스 계정 키 파일 경로 (저장소에 커밋 금지)
         project:
             id: agora-374311
         bucket:
@@ -40,8 +40,8 @@ spring:
             client:
                 registration:
                     google: # /oauth2/authorization/google 이 주소를 동작하게 한다.
-                        client-id: 344895362990-l0ap8aav03aj2tjh5q51d3flbh7bku8a.apps.googleusercontent.com
-                        client-secret: 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
+                        client-id: ${GOOGLE_CLIENT_ID}
+                        client-secret: ${GOOGLE_CLIENT_SECRET}
                         redirect-uri: "https://i8a705.p.ssafy.io/api/oauth2/callback/google"
                         scope:
                             - email
@@ -50,8 +50,8 @@ spring:
                     # 네이버는 OAuth2.0 공식 지원대상이 아니라서 provider 설정이 필요하다.
                     # 요청주소도 다르고, 응답 데이터도 다르기 때문이다.
                     naver:
-                        client-id: d39k8QR1ywTWTqrjqaqw
-                        client-secret: f4Kml8hAaE
+                        client-id: ${NAVER_CLIENT_ID}
+                        client-secret: ${NAVER_CLIENT_SECRET}
                         scope:
                             - name
                             - email
@@ -61,10 +61,10 @@ spring:
                         redirect-uri: https://i8a705.p.ssafy.io/api/oauth2/callback/naver
 
                     kakao:
-                        client-id: 43afb3401ff629234879d5984661dec0
+                        client-id: ${KAKAO_CLIENT_ID}
                         redirect-uri: https://i8a705.p.ssafy.io/api/oauth2/callback/kakao
                         client-authentication-method: POST
-                        client-secret: dmV9BsEaNVrnZswvFwZG0N2pHBASDRPG
+                        client-secret: ${KAKAO_CLIENT_SECRET}
                         authorization-grant-type: authorization_code
                         scope:
                             - profile_nickname

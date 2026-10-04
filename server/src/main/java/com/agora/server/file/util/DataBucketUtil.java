@@ -6,10 +6,10 @@ import com.agora.server.file.exception.GCSFileException;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -34,12 +34,7 @@ public class DataBucketUtil {
 
             byte[] fileData = multipartFile.getBytes();
 
-            InputStream inputStream = new ClassPathResource(gcpConfigFile).getInputStream();
-
-            StorageOptions options = StorageOptions.newBuilder().setProjectId(gcpProjectId)
-                    .setCredentials(GoogleCredentials.fromStream(inputStream)).build();
-
-            Storage storage = options.getService();
+            Storage storage = createStorage();
             Bucket bucket = storage.get(gcpBucketId,Storage.BucketGetOption.fields());
 
             UUID uuid = UUID.randomUUID();
@@ -57,13 +52,17 @@ public class DataBucketUtil {
     }
 
     public void DeleteFile(String fileName) throws IOException {
-        InputStream inputStream = new ClassPathResource(gcpConfigFile).getInputStream();
-
-        StorageOptions options = StorageOptions.newBuilder().setProjectId(gcpProjectId)
-                .setCredentials(GoogleCredentials.fromStream(inputStream)).build();
-
-        Storage storage = options.getService();
+        Storage storage = createStorage();
         storage.delete(BlobId.of(gcpBucketId, fileName));
+    }
+
+    // 서비스 계정 키는 저장소에 포함하지 않고 GCP_CREDENTIALS_PATH 경로의 파일에서 읽는다.
+    private Storage createStorage() throws IOException {
+        try (InputStream inputStream = new FileInputStream(gcpConfigFile)) {
+            StorageOptions options = StorageOptions.newBuilder().setProjectId(gcpProjectId)
+                    .setCredentials(GoogleCredentials.fromStream(inputStream)).build();
+            return options.getService();
+        }
     }
 
 
